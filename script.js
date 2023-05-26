@@ -53,14 +53,16 @@ const __pf = (t_,s_,p_) => fetch(`${HOST}/update?type=${t_}`, {
         {ssid:s_,
         pass:p_}
     )
-}).then(res=>{
+})
+.then(res=>{
     if(!res.ok){
         console.log(`HTTP error! Status : ${res.status}`);
         derr(`HTTP error! Status : ${res.status}`);
     }
     return res.text();
-}).then(data=>console.log(data)
-).catch(e=>{
+})
+.then(data=>derr(data))
+.catch(e=>{
     console.log(e);
     derr(e);
 })
@@ -80,7 +82,6 @@ const s_creds = (e) => {
         derr(`The ${t_} credentials are invalid`);
         return;
     }
-    console.log(ssid, pass);
     __pf(t_, ssid, pass);
     if(t_ === "STA"){
         derr(`Please connect to : ${ssid}`);
@@ -142,7 +143,7 @@ ae(document, 'DOMContentLoaded', () => {
     ae(d('ID_ALL_RESET'), 'click', _settings);
     upSN();
 })
-
+ 
 
 
 
