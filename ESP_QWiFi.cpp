@@ -67,13 +67,15 @@ bool ESP_QWiFi::_saveCreds(void)
         Serial.printf("Failed to create file at %s\n", CREDS_PATH);
         return false;
     }
-    credsFile.printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n", wc.mode.c_str(),
-                     wc.ap_ssid.c_str(),
-                     wc.ap_pass.c_str(),
-                     wc.sta_ssid[0].c_str(),
-                     wc.sta_pass[0].c_str(),
-                     wc.sta_ssid[1].c_str(),
-                     wc.sta_pass[1].c_str());
+    credsFile.printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n"
+                    ,wc.mode.c_str()
+                    ,wc.ap_ssid.c_str()
+                    ,wc.ap_pass.c_str()
+                    ,wc.sta_ssid[0].c_str()
+                    ,wc.sta_pass[0].c_str()
+                    ,wc.sta_ssid[1].c_str()
+                    ,wc.sta_pass[1].c_str()
+    );
     credsFile.close();
     return true;
 }
@@ -108,24 +110,29 @@ bool ESP_QWiFi::_parseCreds(uint8_t *data, String *ssid, String *pass){
 void ESP_QWiFi::_StartWiFiEvents(void){
     staGotIPHandler = WiFi.onStationModeGotIP([this](const WiFiEventStationModeGotIP &event)
                                               {
+        _boot_wifi_conn_f = false;
         Serial.println("Connected to Wi-Fi sucessfully.");
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
+        
         _retr = 0;
-        if(_server){
+        if(_server && !_server_started_f){
             _server->begin();
+            _server_started_f = true;
             Serial.println("main server started");
-        } 
+            }
         });
     staDisconnectedHandler = WiFi.onStationModeDisconnected([this](const WiFiEventStationModeDisconnected &event)
                                                             {
         if(_retr < 5){
             Serial.printf("Disconnected from Wi-Fi Attempting reconnect : %d\n", _retr);
-            _startMainServer();
+            _connectToAccessPoint();
             _retr++;
             return;
         }
-        wc.mode="AP";
+        if(_boot_wifi_conn_f)
+            wc.mode="AP";
+        
         _saveCreds();
         ESP.restart(); 
     });
@@ -269,7 +276,7 @@ void ESP_QWiFi::_startAP(void)
     Serial.println(WiFi.softAPIP());
     _ap_server->begin();
 }
-void ESP_QWiFi::_startMainServer(void)
+void ESP_QWiFi::_connectToAccessPoint(void)
 {
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
@@ -292,5 +299,5 @@ void ESP_QWiFi::begin(AsyncWebServer *server)
         _startAP();
         return;
     }
-    _startMainServer();
+    _connectToAccessPoint();
 }

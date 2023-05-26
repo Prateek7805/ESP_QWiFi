@@ -25,12 +25,9 @@
                 String sta_ssid[2] = {"",""};
                 String sta_pass[2] = {"",""};
             } wc;
-            struct flags{
-                bool _ap_server_started = false;
-                bool _main_server = false;
-                uint8_t _conn_count = 0;
-            } _fl;
             uint8_t _retr = 0;
+            bool _server_started_f = false;
+            bool _boot_wifi_conn_f = true;
             //functions
             bool _validateCreds(String ssid, String pass);
             bool _getCreds(void);
@@ -40,7 +37,7 @@
             void _StartWiFiEvents(void);
             void _APServerDefinition(void);
             void _startAP(void);
-            void _startMainServer(void);
+            void _connectToAccessPoint(void);
         public:
             ESP_QWiFi(uint16_t port);
             void begin(AsyncWebServer * server); 

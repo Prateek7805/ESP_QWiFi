@@ -12,6 +12,14 @@ void setup() {
   qw.begin(&server);
 }
 
+//for testing
+unsigned long reset_mode_timer = millis();
 void loop() {
-  
+  if(millis() - reset_mode_timer > 100){
+    if(!digitalRead(0)){
+      LittleFS.format();
+      ESP.restart();
+    }
+    reset_mode_timer = millis();
+  }
 }
