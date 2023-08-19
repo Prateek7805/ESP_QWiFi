@@ -40,7 +40,9 @@
             void _connectToAccessPoint(void);
         public:
             ESP_QWiFi(uint16_t port);
+            ESP_QWiFi(void);
             void begin(AsyncWebServer * server); 
+            void begin(void);
     };
 
 

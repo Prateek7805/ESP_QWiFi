@@ -137,7 +137,6 @@ void ESP_QWiFi::_StartWiFiEvents(void){
         ESP.restart(); 
     });
 }
-
 void ESP_QWiFi::_APServerDefinition(void)
 {
     _ap_server = new AsyncWebServer(_port);
@@ -288,10 +287,10 @@ ESP_QWiFi::ESP_QWiFi(uint16_t port)
 {
     _port = port;
 }
-
-void ESP_QWiFi::begin(AsyncWebServer *server)
-{
-    _server = server;
+ESP_QWiFi::ESP_QWiFi(){
+    _port = 80;
+}
+void ESP_QWiFi::begin(void){
     _StartWiFiEvents();
     if (_getCreds())
     {
@@ -300,4 +299,9 @@ void ESP_QWiFi::begin(AsyncWebServer *server)
         return;
     }
     _connectToAccessPoint();
+}
+void ESP_QWiFi::begin(AsyncWebServer *server)
+{   
+    _server = server;
+    begin();
 }
